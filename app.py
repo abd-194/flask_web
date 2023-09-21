@@ -16,16 +16,16 @@ app = Flask(__name__)
 with open("model/body_language.pkl", "rb") as f:
     model = pickle.load(f)
 
-drawing_specs = [
-    mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=4),
-    mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2),
-]
+# drawing_specs = [
+#     mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=4),
+#     mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2),
+# ]
 
 
 def process_frame(frame_data):
-    holistic = mp_holistic.Holistic(
-        min_detection_confidence=0.5, min_tracking_confidence=0.5
-    )
+    # holistic = mp_holistic.Holistic(
+    #     min_detection_confidence=0.5, min_tracking_confidence=0.5
+    # )
 
     try:
         # Decode the base64 data to a NumPy array
@@ -37,38 +37,38 @@ def process_frame(frame_data):
         image = image.convert("RGB")
 
         # Convert Pillow image to NumPy array
-        image_np = np.array(image)
+        # image_np = np.array(image)
 
         # Process the frame with MediaPipe Holistic
-        results = holistic.process(image_np)
+        # results = holistic.process(image_np)
 
         # Draw landmarks and perform body language analysis
-        if results.pose_landmarks:
-            mp_drawing.draw_landmarks(
-                image_np,
-                results.pose_landmarks,
-                mp_holistic.POSE_CONNECTIONS,
-                *drawing_specs,
-            )
-            try:
-                pose = results.pose_landmarks.landmark
-                pose_row = list(
-                    np.array(
-                        [
-                            [landmark.x, landmark.y, landmark.z, landmark.visibility]
-                            for landmark in pose
-                        ]
-                    ).flatten()
-                )
-                X = pd.DataFrame([pose_row])
-                body_language_class = model.predict(X)[0]
-                body_language_prob = model.predict_proba(X)[0]
-                if body_language_prob[np.argmax(body_language_prob)] > 0.98:
-                    # Process the image to draw text and rectangles as before
-                    pass
-            except:
-                print(f"Error processing frame: {str(e)}")
-                return {"error": "Frame processing error"}
+        # if results.pose_landmarks:
+        #     mp_drawing.draw_landmarks(
+        #         image_np,
+        #         results.pose_landmarks,
+        #         mp_holistic.POSE_CONNECTIONS,
+        #         *drawing_specs,
+        #     )
+        #     try:
+        #         pose = results.pose_landmarks.landmark
+        #         pose_row = list(
+        #             np.array(
+        #                 [
+        #                     [landmark.x, landmark.y, landmark.z, landmark.visibility]
+        #                     for landmark in pose
+        #                 ]
+        #             ).flatten()
+        #         )
+        #         X = pd.DataFrame([pose_row])
+        #         body_language_class = model.predict(X)[0]
+        #         body_language_prob = model.predict_proba(X)[0]
+        #         if body_language_prob[np.argmax(body_language_prob)] > 0.98:
+        #             # Process the image to draw text and rectangles as before
+        #             pass
+        #     except:
+        #         print(f"Error processing frame: {str(e)}")
+        #         return {"error": "Frame processing error"}
 
         # Convert the processed frame back to base64 data URL
         buffer = BytesIO()
