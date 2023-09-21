@@ -67,7 +67,8 @@ def process_frame(frame_data):
                     # Process the image to draw text and rectangles as before
                     pass
             except:
-                pass
+                print(f"Error processing frame: {str(e)}")
+                return {"error": "Frame processing error"}
 
         # Convert the processed frame back to base64 data URL
         buffer = BytesIO()
@@ -89,9 +90,13 @@ def index():
 
 @app.route("/process_frame", methods=["POST"])
 def process_frame_route():
-    frame_data = request.get_json()
-    result = process_frame(frame_data)
-    return jsonify(result)
+    try:
+        frame_data = request.get_json()
+        result = process_frame(frame_data)
+        return jsonify(result)
+    except Exception as e:
+        # Handle the error gracefully, e.g., return an error response
+        return jsonify({"error": "An error occurred while processing the frame."})
 
 
 if __name__ == "__main__":
