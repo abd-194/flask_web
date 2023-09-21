@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Body Language Detection</title>
+</head>
+<body>
+    <h1>Live Body Language Detection</h1>
+    <div id="video-container">
+        <video id="video" width="640" height="480" autoplay></video>
+        <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+    <script>
+        const videoElement = document.getElementById('video');
+        const canvasElement = document.getElementById('canvas');
+        const ctx = canvasElement.getContext('2d');
+        let streamingActive = false;
+        async function startStreaming() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+                streamingActive = true;
+                processFrames();
+            } catch (error) {
+                console.error('Error accessing the camera:', error);
+            }
+        }
+        function stopStreaming() {
+            const stream = videoElement.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(function(track) {
+                track.stop();
+            });
+            videoElement.srcObject = null;
+            streamingActive = false;
+        }
+        async function processFrames() {
+            while (streamingActive) {
+                ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+                // Send the frame to the Flask server for processing
+                const frameDataUrl = canvasElement.toDataURL('image/jpeg', 1.0);
+                const response = await fetch('/process_frame', {
+                    method: 'POST',
+                    body: JSON.stringify({ frame_data: frameDataUrl }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                // Display the processed frame on the canvas
+                const processedFrameDataUrl = data.processed_frame_data;
+                if (processedFrameDataUrl) {
+                    const processedFrame = new Image();
+                    processedFrame.src = processedFrameDataUrl;
+                    processedFrame.onload = () => {
+                        ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                        ctx.drawImage(processedFrame, 0, 0, canvasElement.width, canvasElement.height);
+                    };
+                }
+            }
+        }
+        window.addEventListener('load', startStreaming);
+        window.addEventListener('beforeunload', stopStreaming);
+    </script>
+</body>
+</html>
