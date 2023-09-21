@@ -29,7 +29,7 @@ pycparser
 pyparsing
 python-dateutil
 pytz
-scikit-learn==1.2.2
+scikit-learn
 scipy
 six
 sounddevice
