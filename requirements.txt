@@ -24,7 +24,7 @@ opencv-contrib-python==4.8.0.76
 packaging
 pandas
 Pillow
-protobuf
+protobuf==3.20.3
 pycparser
 pyparsing
 python-dateutil
