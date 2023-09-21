@@ -4,7 +4,7 @@ blinker==1.6.2
 cffi==1.15.1
 click==8.1.7
 colorama==0.4.6
-contourpy==1.1.1
+contourpy==
 cycler==0.11.0
 flask==2.3.3
 flatbuffers==23.5.26
