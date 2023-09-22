@@ -195,7 +195,7 @@ def process_frame_route():
         result = process_frame(frame_data)
         return jsonify(result)
     except Exception as e:
-        # Handle the error gracefully, e.g., return an error response
+        # Handle the error gracefully, e.g., return an error responses
         return jsonify({"error": "An error occurred while processing the frame."})
 
 
